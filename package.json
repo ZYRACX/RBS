@@ -10,9 +10,15 @@
     "release": "release-it"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.21",
+    "@mui/material": "^5.15.21",
+    "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "next": "14.2.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "styled-components": "^6.1.11"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
@@ -42,7 +48,6 @@
   "plugins": {
     "@release-it/conventional-changelog": {
       "infile": "CHANGELOG.md",
-      "strictSemVer": true,
       "preset": {
         "name": "conventionalcommits",
         "types": [
