@@ -26,7 +26,7 @@ const inventoryData = [
 
 const InventoryTable = () => {
   const theme = useTheme();
-
+  
   return (
     <TableContainer component={Paper} sx={{ mt: 4 }}>
       <Table aria-label="inventory table">

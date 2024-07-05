@@ -6,6 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "styled-components";
 import theme   from "@/utils/theme/theme"
 import styles from "./page.module.css";
+import { SessionProvider } from "next-auth/react";
 
 // MUI imports
 
@@ -27,11 +28,13 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+    <SessionProvider>
       <ThemeProvider theme={theme}>
       <body className={inter.className}>
           {children}
       </body>
       </ThemeProvider>
+    </SessionProvider>
     </html> 
   );
 }

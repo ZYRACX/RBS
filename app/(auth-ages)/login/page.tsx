@@ -6,14 +6,18 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
+// import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { headers } from 'next/headers';
 
+import { useSession, signIn } from 'next-auth/react';
+
+import Link from 'next/link';
 function Copyright(props: any) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -30,7 +34,10 @@ function Copyright(props: any) {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function SignIn() {
+export default function Login() {
+  const {data: session, status} = useSession()
+  console.log(session)
+  const headers = new Headers()
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -47,9 +54,24 @@ export default function SignIn() {
           password: data.get('password'),
       })
     }).then(res => {
-      res.status
+      if (res.status === 200) {
+        res.json().then(data => {
+          console.log(data)
+          localStorage.setItem("token", data.token)
+          headers.set("x-auth-token", data.token)
+          window.location.href = "/app"
+          
+        })
+      }
     })
   };
+
+  React.useEffect(() => {
+    if (status === "authenticated") {
+      window.location.href = "/app"
+    }
+  }, [status])
+
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -102,14 +124,19 @@ export default function SignIn() {
             >
               Sign In
             </Button>
+            <Grid>
+              <Grid item xs>
+                <Link href="#" onClick={() => signIn()}>Github</Link>
+              </Grid>
+            </Grid>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link href="#">
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="#">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

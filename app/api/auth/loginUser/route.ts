@@ -58,15 +58,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     const authToken = jwt.sign(data, JWT_SECRECT)
-
+    console.log(authToken)
     // return NextResponse.json(authToken)
 
     // Respond with success
     return NextResponse.json(
       {
-        token: JWT_SECRECT
+        token: authToken
       },
-      { status: 200 }
+      { status: 200,headers: { "Content-Type": "application/json", "x-auth-token": authToken } },
     );
   } catch (error) {
     console.error("Error in POST request:", error);
