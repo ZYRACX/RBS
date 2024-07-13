@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import connect from "@/utils/mongodb/mongoose";
-import User from "@/models/user";
 import  bcrypt from "bcryptjs"
+import {pool} from "@/utils/mysql/connect"
+import { PrismaClient } from "@prisma/client";
 // POST handler for the app directory
 export async function POST(req: NextRequest) {
+  const prisma =new PrismaClient()
   try {
     // Parse the request body
     const { username, email, password } = await req.json();
@@ -23,56 +24,62 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await connect();
+    // Check if the username already exists
+    const isUsernameExsists = await prisma.user.findUnique({
+      where:{
+        username: username
+      }
+    })
+    if(isUsernameExsists){
+      return NextResponse.json(
+        {
+          status: 400,
+          error: "Username already exists",
+          reason: "The username you provided already exists. Please choose a different username"
+          },
+          { status: 400 }
+          );
+        }
+    // Check if the email already exists
+    const isEmailExsists = await prisma.user.findUnique({
+      where:{
+        email: email
+      }
+    })
+    if (isEmailExsists) {
+      return NextResponse.json(
+        {
+          status: 400,
+          error: "Email already exists",
+          reason: "The email you provided already exists. Please choose a different email"
+          },
+          { status: 400 }
+          );
+    }
+
+    // Making password secure
     const salt = await bcrypt.genSalt(10)
     const securePassword = await bcrypt.hash(password, salt)
 
     // Attempt to create a new user
-    await User.create({username, email, password: securePassword})
-    // await newUser.save();
-    
+    const user = await prisma.user.create({
+      data: {
+        username: username,
+        email: email,
+        password: securePassword
+      }
+    })
 
     // Respond with success
     return NextResponse.json(
       {
         status: 201,
         message: "User created successfully",
-        data: { username, email }
       },
-      { status: 201 }
+      { status: 201, }
     );
   } catch (error) {
     console.error("Error in POST request:", error);
-    // console.log(error.name)
-    // Handle duplicate key error (MongoError)
-    if (error.name === 'MongoServerError' && error.code === 11000) {
-      // Determine which field caused the duplicate key error
-      const duplicateField = Object.keys(error.keyPattern)[0];
-      const errorMessage = `${duplicateField.charAt(0).toUpperCase() + duplicateField.slice(1)} already exists.`;
-
-      return NextResponse.json(
-        {
-          status: 409,
-          error: "Conflict",
-          reason: errorMessage
-        },
-        { status: 409 }
-      );
-    }
-
-    // Handle validation errors (Mongoose ValidationError)
-    if (error.name === 'ValidationError') {
-      const validationErrors = Object.values(error.errors).map(e => e.message);
-
-      return NextResponse.json(
-        {
-          status: 400,
-          error: "Validation Error",
-          reason: validationErrors.join(', ')
-        },
-        { status:  400 }
-      );
-    }
 
     // General server error fallback
     return NextResponse.json(

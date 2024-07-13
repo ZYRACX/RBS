@@ -15,7 +15,9 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
 import { Alert } from '@mui/material';
-
+import { useSession } from 'next-auth/react';
+import {signIn} from "next-auth/react"
+import { PrismaClient } from "@prisma/client";
 function Copyright(props: any) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -33,6 +35,8 @@ function Copyright(props: any) {
 const defaultTheme = createTheme();
 
 export default function SignUp() {
+  const {data: session, status  } = useSession()
+  // console.log(session)
     const [isAlertMessage, setIsAlertMessage] = useState<Boolean>(false)
     const [isSuccessAlert, setIsSuccessAlert] = useState<Boolean>(false)
     const [ alertMessage, setAlertMessage  ] = useState<String>("")
@@ -45,7 +49,6 @@ export default function SignUp() {
     //   email: data.get('email'),
     //   password: data.get('password'),
     // });
-
     fetch("/api/auth/createUser", {
       method: "POST",
       headers: {
@@ -56,7 +59,7 @@ export default function SignUp() {
           password: data.get('password'),
       })
     }).then(res => {
-      if(res.ok){
+      if(res.status == 201){
         setIsAlertMessage(false)
         setIsSuccessAlert(true)
         setSuccessAlert("Your account created Successfully")
@@ -65,19 +68,24 @@ export default function SignUp() {
           // console.log(error)
           setIsSuccessAlert(false)
           setIsAlertMessage(true)
-          setAlertMessage(error.reason)
+          setAlertMessage(error)
         })
       } else if(res.status == 400){
           res.json().then(error => {
             // console.log(error)
             setIsAlertMessage(true)
-            setAlertMessage(error.reason)
+            setAlertMessage(error)
           })
       }
     })
       
   };
 
+  React.useEffect(() => {
+    if(status == "authenticated"){
+      window.location.href = "/app"
+    }
+  },[status])
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -150,6 +158,12 @@ export default function SignUp() {
             >
               Sign Up
             </Button>
+            {/* <Grid>
+              <Grid item xs>
+                <Link href="#" onClick={() => signIn({
+                })}>Github</Link>
+              </Grid>
+            </Grid> */}
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="/login" variant="body2">

@@ -15,6 +15,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useTheme } from '@mui/material/styles';
+import { useSession } from 'next-auth/react';
 
 const inventoryData = [
   { id: 1, name: 'Gold', quantity: 150, value: 3000 },
@@ -26,7 +27,8 @@ const inventoryData = [
 
 const InventoryTable = () => {
   const theme = useTheme();
-  
+  const {data: session, status} = useSession()
+  console.log(session)
   return (
     <TableContainer component={Paper} sx={{ mt: 4 }}>
       <Table aria-label="inventory table">

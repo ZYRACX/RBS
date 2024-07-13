@@ -17,7 +17,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Link from "next/link";
-
+import { signOut, useSession } from "next-auth/react";
 
 
 
@@ -29,11 +29,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const{ data: session, status} = useSession()
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
+
+  const IsLoggnedComponent = () => {
+    return status == "authenticated" ? <Box sx={{ display: { xs: "none", sm: "block" } }}>
+    <Link href={"/app"}><Button sx={{ color: "#fff" }}>DashBoard</Button></Link>
+      <Link href={"#"} onClick={() => signOut()}><Button sx={{ color: "#fff" }}>Logout</Button></Link>
+    </Box> : <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <Link href={"/"}><Button sx={{ color: "#fff" }}>Home</Button></Link>
+              <Link href={"/about"}><Button sx={{ color: "#fff" }}>Sign In</Button></Link>
+            </Box>
+  }
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
@@ -72,10 +83,7 @@ export default function RootLayout({
             >
               RBS
             </Typography>
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Link href={"/"}><Button sx={{ color: "#fff" }}>Home</Button></Link>
-              <Link href={"/about"}><Button sx={{ color: "#fff" }}>About</Button></Link>
-            </Box>
+            <IsLoggnedComponent />
           </Toolbar>
         </AppBar>
         <nav>

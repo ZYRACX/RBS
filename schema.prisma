@@ -1,0 +1,64 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  user_id       String    @id @default(cuid())
+  name          String?
+  username      String    @unique
+  email         String    @unique
+  password      String
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  Inventory Inventory[]
+  Economy   Economy[]
+  Market Market[]
+}
+
+model Item {
+  item_id   Int         @id @default(autoincrement())
+  item_name String      @unique
+  Inventory Inventory[]
+}
+
+model Inventory {
+  Inventory_id Int @id @default(autoincrement()) @unique
+  user_id   String 
+  quantity  Int
+  item_name String
+  item_id   Int @unique
+
+  Item Item @relation(fields: [item_id], references: [item_id])
+  user User @relation(fields: [user_id], references: [user_id])
+  Market Market[]
+}
+
+model Economy {
+  user_id     String   @unique
+  money_owned Int
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [user_id], references: [user_id])
+}
+
+model Market {
+  market_id   Int      @id @default(autoincrement())@unique
+  user_id     String
+  item_id     Int
+  item_name   String
+  price       Int
+  quantity    Int
+  item_status String
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  Seller User @relation(fields: [user_id], references: [user_id])
+  Item   Inventory @relation(fields: [item_id], references: [item_id])
+}

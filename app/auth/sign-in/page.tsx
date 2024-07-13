@@ -45,25 +45,30 @@ export default function Login() {
     //   email: data.get('email'),
     //   password: data.get('password'),
     // });
-    fetch("/api/auth/loginUser", {
-      method: "POST",
-      headers: {
-      },
-      body: JSON.stringify({
-          username: data.get('username'),
-          password: data.get('password'),
-      })
-    }).then(res => {
-      if (res.status === 200) {
-        res.json().then(data => {
-          console.log(data)
-          localStorage.setItem("token", data.token)
-          headers.set("x-auth-token", data.token)
-          window.location.href = "/app"
+    signIn("credentials", {
+      redirect: false,
+      username: data.get('username'),
+      password: data.get('password'),
+    }).then(res => console.log(res))
+    // fetch("/api/auth/loginUser", {
+    //   method: "POST",
+    //   headers: {
+    //   },
+    //   body: JSON.stringify({
+    //       username: data.get('username'),
+    //       password: data.get('password'),
+    //   })
+    // }).then(res => {
+    //   if (res.status === 200) {
+    //     res.json().then(data => {
+    //       console.log(data)
+    //       localStorage.setItem("token", data.token)
+    //       headers.set("x-auth-token", data.token)
+    //       window.location.href = "/app"
           
-        })
-      }
-    })
+    //     })
+    //   }
+    // })
   };
 
   React.useEffect(() => {
@@ -124,11 +129,7 @@ export default function Login() {
             >
               Sign In
             </Button>
-            <Grid>
-              <Grid item xs>
-                <Link href="#" onClick={() => signIn()}>Github</Link>
-              </Grid>
-            </Grid>
+            
             <Grid container>
               <Grid item xs>
                 <Link href="#">
