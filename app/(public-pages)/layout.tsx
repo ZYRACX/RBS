@@ -42,7 +42,7 @@ export default function RootLayout({
       <Link href={"#"} onClick={() => signOut()}><Button sx={{ color: "#fff" }}>Logout</Button></Link>
     </Box> : <Box sx={{ display: { xs: "none", sm: "block" } }}>
             <Link href={"/"}><Button sx={{ color: "#fff" }}>Home</Button></Link>
-              <Link href={"/about"}><Button sx={{ color: "#fff" }}>Sign In</Button></Link>
+              <Link href={"/auth/sign-in"}><Button sx={{ color: "#fff" }}>Sign In</Button></Link>
             </Box>
   }
 
